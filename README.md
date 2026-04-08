@@ -16,7 +16,7 @@ AI-powered personal assistant: Telegram bot with Notion shopping list management
 - **Telegram**: aiogram 3.26+
 - **API**: FastAPI webhook on port 8000
 - **LLM**: ChatOpenAI → poe.com (Gemini backend)
-- **Storage**: SQLite per-chat conversation history
+- **Storage**: memory based storage of messages
 - **MCP**: Notion + Home Assistant via HTTP
 
 ## Quick Start
@@ -41,7 +41,7 @@ POE_API_KEY=your_poe_key
 NOTION_API_KEY=your_notion_key
 NOTION_MCP_AUTH_TOKEN=your_mcp_token
 
-pip install -e .
+uv sync
 docker compose up --build
 ```
 
@@ -49,9 +49,6 @@ docker compose up --build
 ```bash
 python -m uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
 
-# For local webhook testing with ngrok
-ngrok http 8000
-# Update .env: TELEGRAM_WEBHOOK_URL=https://<ngrok-url>/webhook
 ```
 
 ## System Prompt Customization
