@@ -2,8 +2,7 @@
 
 import logging
 
-from aiogram import Bot, Dispatcher, F, Router, types
-from aiogram.fsm.context import FSMContext
+from aiogram import Dispatcher, Router, types
 
 from src.agent import AgentProcessor
 
@@ -41,7 +40,7 @@ async def handle_message(message: types.Message) -> None:
         try:
             response = await asyncio.wait_for(
                 agent_processor.process(chat_id, message.text),
-                timeout=45.0  # seconds
+                timeout=45.0,  # seconds
             )
         except asyncio.TimeoutError:
             logger.error(f"Agent processing timed out for chat {chat_id}")
@@ -52,7 +51,7 @@ async def handle_message(message: types.Message) -> None:
         # Send response
         await message.reply(response)
 
-    except Exception as e:
+    except Exception:
         logger.exception(f"Error handling message from {message.chat.id}")
         await message.reply(
             "Sorry, I encountered an error while processing your message. Please try again."

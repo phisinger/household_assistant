@@ -113,19 +113,21 @@ class AgentProcessor:
         server_configs: dict[str, dict[str, Any]] = {}
         if settings.notion_mcp_url:
             server_configs["notion"] = {
-                    "url": f"{settings.notion_mcp_url}/mcp",
-                    "transport": "http",
-                    "headers": {"Authorization": f"Bearer {settings.notion_mcp_auth_token}"},
-                }
-        
-        # Built-in MCP server for Home Assistant 
+                "url": f"{settings.notion_mcp_url}/mcp",
+                "transport": "http",
+                "headers": {
+                    "Authorization": f"Bearer {settings.notion_mcp_auth_token}"
+                },
+            }
+
+        # Built-in MCP server for Home Assistant
         # if settings.home_assistant_url and settings.home_assistant_token:
         #     server_configs["home_assistant"] = {
         #         "url": f"{settings.home_assistant_url}/api/mcp",
         #         "transport": "streamable_http",
         #         "headers": {"Authorization": f"Bearer {settings.home_assistant_token}"},
         #     }
-        
+
         # Awesome HA MCP server upgrade (https://github.com/homeassistant-ai/ha-mcp)
         if settings.ha_mcp_url:
             server_configs["home_assistant"] = {
@@ -166,13 +168,21 @@ class AgentProcessor:
 
             if self.tools:
                 # Tool-calling agent path (langchain 1.x API)
-                logger.info(f"[{chat_id}] Using tool-calling agent with {len(self.tools)} tools")
+                logger.info(
+                    f"[{chat_id}] Using tool-calling agent with {len(self.tools)} tools"
+                )
                 from langchain.agents import create_agent
 
-                agent = create_agent(self.llm, self.tools, system_prompt=self.system_prompt)
-                messages = list(chat_history.messages) + [HumanMessage(content=user_message)]
+                agent = create_agent(
+                    self.llm, self.tools, system_prompt=self.system_prompt
+                )
+                messages = list(chat_history.messages) + [
+                    HumanMessage(content=user_message)
+                ]
 
-                logger.info(f"[{chat_id}] Invoking agent with {len(chat_history.messages)} history messages")
+                logger.info(
+                    f"[{chat_id}] Invoking agent with {len(chat_history.messages)} history messages"
+                )
                 result = await agent.ainvoke({"messages": messages})
                 response_text = result["messages"][-1].content
                 logger.info(f"[{chat_id}] Agent response received")
@@ -180,20 +190,34 @@ class AgentProcessor:
                 # Bare LLM path (no tools)
                 logger.info(f"[{chat_id}] Using bare LLM (no tools)")
                 messages = [SystemMessage(content=self.system_prompt)]
-                messages.extend(m for m in chat_history.messages if isinstance(m, (HumanMessage, AIMessage)))
+                messages.extend(
+                    m
+                    for m in chat_history.messages
+                    if isinstance(m, (HumanMessage, AIMessage))
+                )
                 messages.append(HumanMessage(content=user_message))
 
-                logger.info(f"[{chat_id}] Invoking LLM with {len(messages)} messages...")
+                logger.info(
+                    f"[{chat_id}] Invoking LLM with {len(messages)} messages..."
+                )
                 try:
                     llm_response = await self.llm.ainvoke(messages)
                     logger.info(f"[{chat_id}] LLM response received")
-                    response_text = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                    response_text = (
+                        llm_response.content
+                        if hasattr(llm_response, "content")
+                        else str(llm_response)
+                    )
                 except Exception as llm_error:
                     logger.error(f"[{chat_id}] LLM invocation failed: {llm_error}")
                     # Fallback: call with just the last message as string
                     logger.info(f"[{chat_id}] Trying fallback with simple invoke...")
                     llm_response = await self.llm.invoke(user_message)
-                    response_text = llm_response.content if hasattr(llm_response, 'content') else str(llm_response)
+                    response_text = (
+                        llm_response.content
+                        if hasattr(llm_response, "content")
+                        else str(llm_response)
+                    )
 
             # Add user and AI response to history
             logger.info(f"[{chat_id}] Saving messages to history...")
@@ -221,7 +245,7 @@ class AgentProcessor:
 
     async def cleanup(self) -> None:
         """Cleanup resources (close MCP client if needed)."""
-        if self._mcp_client and hasattr(self._mcp_client, 'close'):
+        if self._mcp_client and hasattr(self._mcp_client, "close"):
             await self._mcp_client.close()
             logger.info("MCP client closed")
         logger.info("Agent processor cleanup completed")

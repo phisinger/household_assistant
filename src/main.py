@@ -58,9 +58,7 @@ async def lifespan(app: FastAPI):
             secret_token=settings.telegram_webhook_secret,
         )
 
-        logger.info(
-            f"Webhook registered: {settings.telegram_webhook_url}"
-        )
+        logger.info(f"Webhook registered: {settings.telegram_webhook_url}")
 
         yield
 
@@ -144,7 +142,6 @@ async def delete_webhook() -> dict:
 
 
 if __name__ == "__main__":
-
     uvicorn.run(
         app,
         host="127.0.0.1",

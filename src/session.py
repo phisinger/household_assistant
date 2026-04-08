@@ -23,7 +23,9 @@ class SessionManager:
 
     async def initialize(self) -> None:
         """No-op for compatibility."""
-        logger.info(f"SessionManager initialized (in-memory, TTL={self.ttl_minutes}min)")
+        logger.info(
+            f"SessionManager initialized (in-memory, TTL={self.ttl_minutes}min)"
+        )
 
     async def get_messages(self, chat_id: int | str) -> list[dict[str, Any]]:
         """Get messages for a chat, removing expired sessions.

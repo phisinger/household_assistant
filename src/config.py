@@ -1,7 +1,5 @@
 """Configuration management using Pydantic Settings."""
 
-from pathlib import Path
-
 from pydantic_settings import BaseSettings
 
 
@@ -22,7 +20,7 @@ class Settings(BaseSettings):
     notion_api_key: str
     notion_mcp_url: str = "http://notion-mcp:3000"
     notion_mcp_auth_token: str
-    
+
     # Home Assistant Integration
     home_assistant_url: str = ""
     home_assistant_token: str = ""
