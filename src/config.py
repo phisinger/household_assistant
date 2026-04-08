@@ -23,11 +23,9 @@ class Settings(BaseSettings):
     notion_mcp_url: str = "http://notion-mcp:3000"
     notion_mcp_auth_token: str
     
-    # Home Assistant Integration (optional)
+    # Home Assistant Integration
     home_assistant_url: str = ""
     home_assistant_token: str = ""
-    # ha_mcp_url: direct URL to ha-mcp server (POST-only, no SSE)
-    # e.g. https://homephi.duckdns.org:8123/api/mcp
     ha_mcp_url: str = ""
 
     # App settings

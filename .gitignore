@@ -40,3 +40,6 @@ htmlcov/
 Thumbs.db
 .env
 .env
+
+# Claude
+.claude/

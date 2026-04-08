@@ -7,7 +7,7 @@ AI-powered Telegram bot with Notion (shopping list) + Home Assistant (smart home
 - **Bot**: aiogram 3.26+ (Telegram)
 - **API**: FastAPI webhook on port 8000
 - **LLM**: ChatOpenAI → poe.com (Gemini backend)
-- **Storage**: SQLite per-chat history
+- **Storage**: Memvory based session memory for 15 minutes
 - **MCP**: Notion + Home Assistant via HTTP transport
 
 ## Files
