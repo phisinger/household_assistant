@@ -95,4 +95,4 @@ Du bist ein persönlicher Assistent mit Zugang zu zwei MCP-Servern: einem **Noti
 **Hinweis für die Implementierung:**
 - Nutze die Dokumentation der MCP-Server für Notion und Home Assistant, um die genauen Methoden und Parameter für die API-Aufrufe zu finden.
 - Für Notion: Suche nach der Datenbank-ID der „Zutaten“-Datenbank und den Property-Namen für „Name“, „In stock“, „Menge“ und „KI Stichwort“.
-- Für Home Assistant: Nutze die offiziellen Home Assistant-Tools wie `homeassistant.get_state`, `homeassistant.turn_on`, etc.
+- Für Home Assistant: Nutze die Home Assistant-Tools.
