@@ -1,0 +1,75 @@
+services:
+  notion-mcp:
+    image: node:20-alpine
+    container_name: notion-mcp
+    restart: unless-stopped
+    command: >
+      sh -c "npx -y @notionhq/notion-mcp-server
+      --transport http
+      --port 3000
+      --auth-token ${NOTION_MCP_AUTH_TOKEN}"
+    environment:
+      - NOTION_TOKEN=${NOTION_API_KEY}
+      - NOTION_MCP_AUTH_TOKEN=${NOTION_MCP_AUTH_TOKEN}
+    ports:
+      - "3000:3000"
+    networks:
+      - assistant-network
+    healthcheck:
+      test: ["CMD", "wget", "--timeout=10", "-q", "-O-", "http://127.0.0.1:3000/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  assistant:
+    build: .
+    container_name: notion-assistant
+    restart: unless-stopped
+    depends_on:
+      notion-mcp:
+        condition: service_healthy
+      ha-mcp:
+        condition: service_started
+    env_file: .env
+    environment:
+      - PYTHONUNBUFFERED=1
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app  # Mount source code for live reload during development
+    networks:
+      - assistant-network
+      - n8n_default
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  ha-mcp:
+    image: ghcr.io/homeassistant-ai/ha-mcp:latest
+    container_name: ha-mcp-server
+    ports:
+      - "8086:8086"
+    environment:
+      - HOMEASSISTANT_URL=${HOME_ASSISTANT_URL}
+      - HOMEASSISTANT_TOKEN=${HOME_ASSISTANT_TOKEN}
+    command: ha-mcp-web
+    restart: unless-stopped
+    networks:
+      - assistant-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8086/health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+networks:
+  assistant-network:
+    driver: bridge
+    enable_ipv6: true
+  n8n_default:
+    external: true
